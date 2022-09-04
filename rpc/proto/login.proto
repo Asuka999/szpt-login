@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "rpc/proto/proto";
+
+package login;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc Login (LoginRequest) returns (LoginReply) {}
+}
+
+message Cookies {
+    string Name = 1;
+    string Value = 2;
+    string Path  =3;
+    string Domain =4;
+
+}
+
+
+
+// The request message containing the user's name.
+message LoginRequest {
+  string Account =1;
+  string Password = 2;
+}
+
+// The response message containing the greetings
+message LoginReply {
+  repeated Cookies cookies = 1;
+}
