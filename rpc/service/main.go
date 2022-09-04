@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	szpt_login "github.com/Asuka999/szpt-login/login"
+	"github.com/Asuka999/szpt-login/login"
 	pb "github.com/Asuka999/szpt-login/rpc/proto"
 	"google.golang.org/grpc"
 	"log"
@@ -22,7 +22,7 @@ type server struct {
 func (s *server) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginReply, error) {
 	log.Printf("Received: Login : %s ---- Password: %s", in.Account, in.Password)
 
-	cookies := szpt_login.Login(in.Account, in.Password).GetCookiesMap()
+	cookies := login.Login(in.Account, in.Password).GetCookiesMap()
 
 	var Cookies []*pb.Cookies
 	for _, cookie := range cookies {
@@ -39,7 +39,7 @@ func (s *server) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginReply
 	}, nil
 }
 
-func Main() {
+func main() {
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {

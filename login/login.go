@@ -1,4 +1,4 @@
-package szpt_login
+package login
 
 import (
 	"github.com/Asuka999/szpt-login/utils"
