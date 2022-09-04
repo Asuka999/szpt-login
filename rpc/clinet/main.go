@@ -3,10 +3,10 @@ package clinet
 import (
 	"context"
 	"flag"
+	pb "github.com/Asuka999/szpt-login/rpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	pb "szpt_login/rpc/proto"
 	"time"
 )
 

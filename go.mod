@@ -1,4 +1,4 @@
-module szpt_login
+module github.com/Asuka999/szpt-login
 
 go 1.18
 

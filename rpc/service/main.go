@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	szpt_login "github.com/Asuka999/szpt-login/login"
+	pb "github.com/Asuka999/szpt-login/rpc/proto"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	szpt_login "szpt_login/login"
-	pb "szpt_login/rpc/proto"
 )
 
 var (

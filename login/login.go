@@ -1,11 +1,11 @@
 package szpt_login
 
 import (
+	"github.com/Asuka999/szpt-login/utils"
 	cookiejar "github.com/juju/persistent-cookiejar"
 	"net/http"
 	"net/url"
 	"strings"
-	"szpt_login/utils"
 )
 
 type loginReply interface {
