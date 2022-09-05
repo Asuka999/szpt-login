@@ -7,8 +7,7 @@ COPY . .
 
 ENV GOPROXY  "https://goproxy.cn"
 
-CMD go mod tidy
-CMD go build .
+RUN go build -o ./szpt_login rpc/service/main.go
 
 EXPOSE 50051
 
