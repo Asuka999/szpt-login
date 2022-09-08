@@ -11,6 +11,7 @@ import (
 type loginReply interface {
 	GetCookiesString() string
 	GetCookiesMap() (cookies []*http.Cookie)
+	GetClinet() *http.Client
 }
 
 func (U *user) GetCookiesString() string {
@@ -22,6 +23,10 @@ func (U *user) GetCookiesString() string {
 func (U *user) GetCookiesMap() (cookies []*http.Cookie) {
 	cookies = U.Jar.AllCookies()
 	return cookies
+}
+
+func (U *user) GetClinet() *http.Client {
+	return U.clinet
 }
 
 func Login(Account string, Passwrod string) loginReply {
