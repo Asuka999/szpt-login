@@ -22,10 +22,13 @@ type server struct {
 func (s *server) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginReply, error) {
 	log.Printf("Received: Login : %s ---- Password: %s", in.Account, in.Password)
 
-	cookies := login.Login(in.Account, in.Password).GetCookiesMap()
-
+	cookies, err := login.Login(in.Account, in.Password)
+	if err != nil {
+		return nil, err
+	}
+	cookies_ := cookies.GetCookiesMap()
 	var Cookies []*pb.Cookies
-	for _, cookie := range cookies {
+	for _, cookie := range cookies_ {
 		Cookies = append(Cookies, &pb.Cookies{
 			Name:   cookie.Name,
 			Value:  cookie.Value,

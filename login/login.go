@@ -1,6 +1,7 @@
 package login
 
 import (
+	"errors"
 	"github.com/Asuka999/szpt-login/utils"
 	cookiejar "github.com/juju/persistent-cookiejar"
 	"net/http"
@@ -29,15 +30,19 @@ func (U *user) GetClinet() *http.Client {
 	return U.clinet
 }
 
-func Login(Account string, Passwrod string) loginReply {
+func Login(Account string, Passwrod string) (loginReply, error) {
 	user := &user{
 		account:  Account,
 		passwrod: Passwrod,
 	}
 	user.newHttpClinet()
 	user.getEncryInfo()
-	user.login()
-	return user
+	err := user.login()
+
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 type user struct {
@@ -74,13 +79,17 @@ func (U *user) getEncryInfo() {
 
 }
 
-func (U *user) login() {
+func (U *user) login() error {
 	requestForm := strings.NewReader(url.Values{"username": {U.account}, "password": {U.encryptedPwd}, "lt": {U.lt}, "dllt": {"userNamePasswordLogin"}, "execution": {"e1s1"}, "_eventId": {"submit"}, "rmShown": {"1"}}.Encode())
 	req, _ := http.NewRequest("POST", "https://authserver.szpt.edu.cn/authserver/login", requestForm)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	U.clinet.Do(req)
-	U.clinet.Get("https://ehall.szpt.edu.cn/publicappinternet/sys/szptpubxsjkxxbs/*default/index.do#/")
-	menuinfoForm := "data=%7B%22APPID%22%3A%225812981499622390%22%2C%22APPNAME%22%3A%22szptpubxsjkxxbs%22%7D"
-	menuinfoForms := strings.NewReader(menuinfoForm)
-	U.clinet.Post("https://ehall.szpt.edu.cn/publicappinternet/sys/itpub/MobileCommon/getMenuInfo.do", "application/x-www-form-urlencoded", menuinfoForms)
+	loginResp, _ := U.clinet.Do(req)
+	if loginResp.Request.URL.Path == "/authserver/index.do" {
+		U.clinet.Get("https://ehall.szpt.edu.cn/publicappinternet/sys/szptpubxsjkxxbs/*default/index.do#/")
+		menuinfoForm := "data=%7B%22APPID%22%3A%225812981499622390%22%2C%22APPNAME%22%3A%22szptpubxsjkxxbs%22%7D"
+		menuinfoForms := strings.NewReader(menuinfoForm)
+		U.clinet.Post("https://ehall.szpt.edu.cn/publicappinternet/sys/itpub/MobileCommon/getMenuInfo.do", "application/x-www-form-urlencoded", menuinfoForms)
+		return nil
+	}
+	return errors.New("提供的用户名或者密码有误")
 }
