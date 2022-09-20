@@ -13,39 +13,40 @@ type loginReply interface {
 	GetCookiesString() string
 	GetCookiesMap() (cookies []*http.Cookie)
 	GetClinet() *http.Client
+	GetUser() *User
 }
 
-func (U *user) GetCookiesString() string {
+func (U *User) GetCookiesString() string {
 	Json, _ := U.Jar.MarshalJSON()
 
 	return string(Json)
 }
 
-func (U *user) GetCookiesMap() (cookies []*http.Cookie) {
+func (U *User) GetCookiesMap() (cookies []*http.Cookie) {
 	cookies = U.Jar.AllCookies()
 	return cookies
 }
 
-func (U *user) GetClinet() *http.Client {
+func (U *User) GetClinet() *http.Client {
 	return U.clinet
 }
 
 func Login(Account string, Passwrod string) (loginReply, error) {
-	user := &user{
+	User := &User{
 		account:  Account,
 		passwrod: Passwrod,
 	}
-	user.newHttpClinet()
-	user.getEncryInfo()
-	err := user.login()
+	User.newHttpClinet()
+	User.getEncryInfo()
+	err := User.login()
 
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return User, nil
 }
 
-type user struct {
+type User struct {
 	account        string
 	passwrod       string
 	lt             string
@@ -60,7 +61,11 @@ func setProxyUrl() (proxyUrl *url.URL) {
 	return proxyUrl
 }
 
-func (U *user) newHttpClinet() {
+func (U *User) GetUser() *User {
+	return U
+}
+
+func (U *User) newHttpClinet() {
 	U.Jar, _ = cookiejar.New(nil)
 
 	U.clinet = &http.Client{
@@ -72,15 +77,15 @@ func (U *user) newHttpClinet() {
 	}
 }
 
-func (U *user) getEncryInfo() {
+func (U *User) getEncryInfo() {
 	resp, _ := U.clinet.Get("https://authserver.szpt.edu.cn/authserver/login")
 	U.lt, U.pwdEncryptSalt = utils.GetEncry(resp)
 	U.encryptedPwd = utils.EncryPasswd(U.passwrod, U.pwdEncryptSalt)
 
 }
 
-func (U *user) login() error {
-	requestForm := strings.NewReader(url.Values{"username": {U.account}, "password": {U.encryptedPwd}, "lt": {U.lt}, "dllt": {"userNamePasswordLogin"}, "execution": {"e1s1"}, "_eventId": {"submit"}, "rmShown": {"1"}}.Encode())
+func (U *User) login() error {
+	requestForm := strings.NewReader(url.Values{"Username": {U.account}, "password": {U.encryptedPwd}, "lt": {U.lt}, "dllt": {"UserNamePasswordLogin"}, "execution": {"e1s1"}, "_eventId": {"submit"}, "rmShown": {"1"}}.Encode())
 	req, _ := http.NewRequest("POST", "https://authserver.szpt.edu.cn/authserver/login", requestForm)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	loginResp, _ := U.clinet.Do(req)
