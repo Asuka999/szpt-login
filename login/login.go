@@ -13,6 +13,7 @@ type loginReply interface {
 	GetCookiesString() string
 	GetCookiesMap() (cookies []*http.Cookie)
 	GetClinet() *http.Client
+	GetJar() *cookiejar.Jar
 }
 
 func (U *user) GetCookiesString() string {
@@ -58,6 +59,10 @@ type user struct {
 func setProxyUrl() (proxyUrl *url.URL) {
 	proxyUrl, _ = url.Parse("http://127.0.0.1:9090")
 	return proxyUrl
+}
+
+func (U *user) GetJar() *cookiejar.Jar {
+	return U.Jar
 }
 
 func (U *user) newHttpClinet() {
